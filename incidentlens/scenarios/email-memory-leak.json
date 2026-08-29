@@ -1,0 +1,56 @@
+{
+  "id": "email-memory-leak",
+  "title": "Email service memory leak",
+  "source": "Curated deterministic replay modeled on OpenTelemetry Demo fault concepts",
+  "alert": {
+    "id": "A-01",
+    "severity": "SEV-2",
+    "service": "email",
+    "name": "EmailMemoryGrowth",
+    "window": "09:10-09:30 UTC",
+    "symptom": "Email resident memory grew from 118 MiB to 536 MiB"
+  },
+  "metrics": {
+    "id": "M-01",
+    "source": "Prometheus replay",
+    "query": "process_resident_memory_bytes{service_name=\"email\"}",
+    "summary": "Email resident memory rose monotonically from 118 MiB to 536 MiB during steady traffic.",
+    "unit": "MiB",
+    "values": [
+      {"timestamp": "09:10:00Z", "value": 118},
+      {"timestamp": "09:15:00Z", "value": 206},
+      {"timestamp": "09:20:00Z", "value": 322},
+      {"timestamp": "09:25:00Z", "value": 441},
+      {"timestamp": "09:30:00Z", "value": 536}
+    ]
+  },
+  "logs": {
+    "id": "L-01",
+    "source": "OpenSearch replay",
+    "query": "service.name=email AND @timestamp:[09:10 TO 09:30]",
+    "summary": "Garbage collection reclaimed only 2 percent and retained allocation warnings repeated.",
+    "events": [
+      {"timestamp": "09:21:11.002Z", "severity": "WARN", "service": "email", "trace_id": "mail-7711", "body": "GC cycle reclaimed only 2%; retained allocation set increasing"},
+      {"timestamp": "09:26:42.201Z", "severity": "WARN", "service": "email", "trace_id": "mail-7798", "body": "heap retention above expected baseline"}
+    ]
+  },
+  "trace": {
+    "id": "T-01",
+    "source": "Jaeger replay",
+    "query": "service=email&lookback=20m&limit=20",
+    "retry_query": "service=email&operation=SendEmail&lookback=10m&limit=5",
+    "summary": "Email business requests continue to succeed, weakening dependency outage explanations.",
+    "trace_id": "mail-7711",
+    "spans": [
+      {"service": "checkout", "operation": "PlaceOrder", "duration_ms": 312, "status": "OK"},
+      {"service": "email", "operation": "SendEmail", "duration_ms": 87, "status": "OK"}
+    ]
+  },
+  "recommendation": {
+    "action": "Disable the memory-leak fault and recycle the email instance after approval.",
+    "risk": "medium",
+    "verification": "Confirm resident memory stabilizes and successful email traces remain within baseline.",
+    "production_write": false
+  }
+}
+

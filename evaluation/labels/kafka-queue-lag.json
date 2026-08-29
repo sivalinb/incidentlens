@@ -1,0 +1,6 @@
+{
+  "scenario_id": "kafka-queue-lag",
+  "expected_cause": "Consumer delay plus producer pressure",
+  "expected_evidence_ids": ["M-01", "L-01", "T-01"]
+}
+

@@ -1,0 +1,6 @@
+{
+  "scenario_id": "email-memory-leak",
+  "expected_cause": "Email process retains allocations",
+  "expected_evidence_ids": ["M-01", "L-01", "T-01"]
+}
+

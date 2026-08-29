@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "incidentlens"
+version = "1.0.0"
+description = "Evidence-first, human-gated incident investigation for OpenTelemetry signals"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Sivalingan Babu" }]
+dependencies = []
+
+[project.optional-dependencies]
+langgraph = [
+  "langgraph>=1.0,<2",
+  "langgraph-checkpoint-sqlite>=3.0,<4",
+]
+dev = []
+
+[project.scripts]
+incidentlens = "incidentlens.cli:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["incidentlens*"]
+
+[tool.setuptools.package-data]
+incidentlens = ["scenarios/*.json"]
+

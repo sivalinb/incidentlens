@@ -1,0 +1,17 @@
+.DS_Store
+.venv/
+.cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.coverage
+.incidentlens/
+node_modules/
+dist/
+build/
+.env
+.env.*
+!.env.example
+tmp/
+.tmp-tests/
+

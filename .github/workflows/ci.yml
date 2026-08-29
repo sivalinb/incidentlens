@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install project with LangGraph
+        run: python -m pip install -e '.[langgraph]'
+      - name: Python behavior and safety tests
+        env:
+          LANGGRAPH_STRICT_MSGPACK: 'true'
+        run: python -m unittest discover -s tests -p 'test*.py' -v
+      - name: Static website tests
+        run: node --test website/tests/*.test.mjs
+      - name: Deterministic replay evaluation
+        run: incidentlens evaluate
+

@@ -1,0 +1,6 @@
+{
+  "scenario_id": "payment-unreachable",
+  "expected_cause": "Invalid payment-service address",
+  "expected_evidence_ids": ["M-01", "L-01", "T-01"]
+}
+

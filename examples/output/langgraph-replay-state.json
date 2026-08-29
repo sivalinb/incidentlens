@@ -1,0 +1,227 @@
+{
+  "alert": {
+    "id": "A-01",
+    "name": "CheckoutErrorBudgetBurn",
+    "service": "checkout",
+    "severity": "SEV-1",
+    "symptom": "Checkout error rate rose from 0.6% to 28.2%",
+    "window": "18:37-18:47 UTC"
+  },
+  "approval": true,
+  "created_at": "2026-08-29T19:26:27+00:00",
+  "evidence": [
+    {
+      "collected_at": "2026-08-29T19:26:28+00:00",
+      "id": "M-01",
+      "query": "sum(rate(traces_span_metrics_calls_total{service_name=\"checkout\",status_code=\"STATUS_CODE_ERROR\"}[2m])) / sum(rate(traces_span_metrics_calls_total{service_name=\"checkout\"}[2m]))",
+      "raw": {
+        "unit": "percent",
+        "values": [
+          {
+            "timestamp": "18:37:00Z",
+            "value": 0.6
+          },
+          {
+            "timestamp": "18:40:00Z",
+            "value": 0.7
+          },
+          {
+            "timestamp": "18:42:00Z",
+            "value": 12.4
+          },
+          {
+            "timestamp": "18:44:00Z",
+            "value": 28.2
+          },
+          {
+            "timestamp": "18:47:00Z",
+            "value": 27.8
+          }
+        ]
+      },
+      "signal": "metrics",
+      "source": "Prometheus replay",
+      "summary": "Checkout errors rose from a 0.6 percent baseline to 28.2 percent after 18:42 UTC."
+    },
+    {
+      "collected_at": "2026-08-29T19:26:28+00:00",
+      "id": "L-01",
+      "query": "service.name=checkout AND @timestamp:[18:37 TO 18:47]",
+      "raw": {
+        "events": [
+          {
+            "body": "failed to charge order: rpc error: code = Unavailable desc = connection refused",
+            "service": "checkout",
+            "severity": "ERROR",
+            "timestamp": "18:42:03.114Z",
+            "trace_id": "4f31a9c087b04bb0"
+          },
+          {
+            "body": "payment request failed; order not committed",
+            "service": "checkout",
+            "severity": "WARN",
+            "timestamp": "18:42:03.116Z",
+            "trace_id": "4f31a9c087b04bb0"
+          },
+          {
+            "body": "health check OK; service accepting requests on configured endpoint",
+            "service": "payment",
+            "severity": "INFO",
+            "timestamp": "18:42:07.842Z",
+            "trace_id": "health-0921"
+          }
+        ]
+      },
+      "signal": "logs",
+      "source": "OpenSearch replay",
+      "summary": "Checkout reported payment connection refused while the payment health check remained successful."
+    },
+    {
+      "collected_at": "2026-08-29T19:26:28+00:00",
+      "id": "T-01",
+      "query": "service=checkout&operation=Checkout&minDuration=500ms&lookback=5m&limit=5",
+      "raw": {
+        "spans": [
+          {
+            "duration_ms": 1842,
+            "operation": "POST /api/checkout",
+            "service": "frontend",
+            "status": "ERROR"
+          },
+          {
+            "duration_ms": 1796,
+            "operation": "Checkout",
+            "service": "checkout",
+            "status": "ERROR"
+          },
+          {
+            "duration_ms": 1711,
+            "operation": "Charge",
+            "service": "payment",
+            "status": "UNAVAILABLE"
+          }
+        ],
+        "trace_id": "4f31a9c087b04bb0"
+      },
+      "signal": "traces",
+      "source": "Jaeger replay",
+      "summary": "The critical path fails between checkout and payment before payment request handling begins."
+    }
+  ],
+  "final_action": "verification_plan_only",
+  "hypotheses": [
+    {
+      "cause": "Invalid payment-service address",
+      "confidence": 0.92,
+      "evidence_ids": [
+        "M-01",
+        "L-01",
+        "T-01"
+      ],
+      "rationale": "Connection refusal occurs before request handling while payment health remains successful.",
+      "verdict": "supported"
+    },
+    {
+      "cause": "Payment process crashed",
+      "confidence": 0.28,
+      "evidence_ids": [
+        "L-01",
+        "T-01"
+      ],
+      "rationale": "Connection refusal is plausible, but a successful health check is counter-evidence.",
+      "verdict": "weakened"
+    },
+    {
+      "cause": "Checkout application defect",
+      "confidence": 0.18,
+      "evidence_ids": [
+        "M-01"
+      ],
+      "rationale": "The symptom is visible at checkout, but the trace localizes the failure to its payment dependency.",
+      "verdict": "weakened"
+    }
+  ],
+  "incident_id": "IL-3B1A885C",
+  "modes": {
+    "action_mode": "simulation",
+    "orchestration_engine": "langgraph",
+    "reasoning_mode": "deterministic_rubric",
+    "telemetry_mode": "deterministic_replay"
+  },
+  "recommendation": {
+    "action": "Restore the checkout payment-service endpoint to the approved service address.",
+    "production_write": false,
+    "risk": "medium",
+    "verification": "Re-run checkout traffic and verify error ratio, correlated logs, and traces return to baseline."
+  },
+  "reviewer_note": "Evidence reviewed in a separate process",
+  "scenario_id": "payment-unreachable",
+  "status": "approved_pending_verification",
+  "timeline": [
+    {
+      "at": "2026-08-29T19:26:27+00:00",
+      "message": "Alert boundary and incident window recorded",
+      "node": "scope",
+      "outcome": "success"
+    },
+    {
+      "at": "2026-08-29T19:26:28+00:00",
+      "message": "Collected M-01 using sum(rate(traces_span_metrics_calls_total{service_name=\"checkout\",status_code=\"STATUS_CODE_ERROR\"}[2m])) / sum(rate(traces_span_metrics_calls_total{service_name=\"checkout\"}[2m]))",
+      "node": "metrics",
+      "outcome": "success"
+    },
+    {
+      "at": "2026-08-29T19:26:28+00:00",
+      "message": "Collected L-01 using service.name=checkout AND @timestamp:[18:37 TO 18:47]",
+      "node": "logs",
+      "outcome": "success"
+    },
+    {
+      "at": "2026-08-29T19:26:28+00:00",
+      "message": "Jaeger request timed out after the bounded query window; narrow query",
+      "node": "trace",
+      "outcome": "retry"
+    },
+    {
+      "at": "2026-08-29T19:26:28+00:00",
+      "message": "Collected T-01 using service=checkout&operation=Checkout&minDuration=500ms&lookback=5m&limit=5",
+      "node": "trace",
+      "outcome": "success"
+    },
+    {
+      "at": "2026-08-29T19:26:28+00:00",
+      "message": "Generated three evidence-cited alternatives",
+      "node": "hypothesis",
+      "outcome": "success"
+    },
+    {
+      "at": "2026-08-29T19:26:28+00:00",
+      "message": "Hypotheses ranked and evidence citations validated",
+      "node": "critic",
+      "outcome": "success"
+    },
+    {
+      "at": "2026-08-29T19:26:28+00:00",
+      "message": "Write-like remediation remains blocked pending human decision",
+      "node": "human_gate",
+      "outcome": "interrupt"
+    },
+    {
+      "at": "2026-08-29T19:26:28+00:00",
+      "message": "Plan approved; no production action executed",
+      "node": "human_gate",
+      "outcome": "approved"
+    }
+  ],
+  "tool_failures": [
+    {
+      "attempt": 1,
+      "error": "Jaeger request timed out after the bounded query window",
+      "recorded_at": "2026-08-29T19:26:28+00:00",
+      "recovered": true,
+      "strategy": "narrow query",
+      "tool": "trace"
+    }
+  ],
+  "updated_at": "2026-08-29T19:26:28+00:00"
+}

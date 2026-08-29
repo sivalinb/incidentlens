@@ -1,0 +1,56 @@
+{
+  "id": "kafka-queue-lag",
+  "title": "Kafka consumer queue lag",
+  "source": "Curated deterministic replay modeled on OpenTelemetry Demo fault concepts",
+  "alert": {
+    "id": "A-01",
+    "severity": "SEV-2",
+    "service": "accounting",
+    "name": "KafkaConsumerLagHigh",
+    "window": "14:00-14:15 UTC",
+    "symptom": "Consumer lag increased from 104 to 12,480 messages"
+  },
+  "metrics": {
+    "id": "M-01",
+    "source": "Prometheus replay",
+    "query": "kafka_consumer_group_lag{consumer_group=\"accounting\"}",
+    "summary": "Accounting consumer lag rose from 104 to 12,480 messages while producer throughput increased.",
+    "unit": "messages",
+    "values": [
+      {"timestamp": "14:00:00Z", "value": 104},
+      {"timestamp": "14:04:00Z", "value": 890},
+      {"timestamp": "14:08:00Z", "value": 4200},
+      {"timestamp": "14:12:00Z", "value": 9100},
+      {"timestamp": "14:15:00Z", "value": 12480}
+    ]
+  },
+  "logs": {
+    "id": "L-01",
+    "source": "OpenSearch replay",
+    "query": "service.name=accounting AND message:(consumer OR processing)",
+    "summary": "Accounting consumer processing repeatedly exceeded its poll interval under producer pressure.",
+    "events": [
+      {"timestamp": "14:09:18.504Z", "severity": "WARN", "service": "accounting", "trace_id": "acct-8842", "body": "consumer processing exceeded expected poll interval"},
+      {"timestamp": "14:10:44.117Z", "severity": "INFO", "service": "kafka", "trace_id": "acct-8842", "body": "producer throughput 3.4x baseline"}
+    ]
+  },
+  "trace": {
+    "id": "T-01",
+    "source": "Jaeger replay",
+    "query": "service=accounting&lookback=15m&limit=20",
+    "retry_query": "service=accounting&operation=Consume&minDuration=1s&lookback=10m&limit=5",
+    "summary": "The accounting Consume span lasts 8.2 seconds while upstream checkout remains healthy.",
+    "trace_id": "acct-8842",
+    "spans": [
+      {"service": "checkout", "operation": "PublishOrder", "duration_ms": 64, "status": "OK"},
+      {"service": "accounting", "operation": "Consume", "duration_ms": 8200, "status": "OK"}
+    ]
+  },
+  "recommendation": {
+    "action": "Reduce consumer delay or scale accounting consumption after human approval.",
+    "risk": "medium",
+    "verification": "Confirm lag drains, processing duration falls, and producer/consumer rates converge.",
+    "production_write": false
+  }
+}
+

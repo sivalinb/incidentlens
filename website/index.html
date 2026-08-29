@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="IncidentLens evidence-first incident investigation demo">
+  <title>IncidentLens - From telemetry to a safe decision</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="shell hero">
+    <div>
+      <p class="eyebrow">EVIDENCE-FIRST SRE WORKBENCH</p>
+      <h1>From telemetry to a safe decision.</h1>
+      <p class="lede">Follow a deterministic incident replay through collection, correlation, criticism, and human approval.</p>
+    </div>
+    <div class="mode-card" aria-label="Execution modes">
+      <span>Telemetry <b>Deterministic replay</b></span>
+      <span>Reasoning <b>Evidence rubric</b></span>
+      <span>Orchestrator <b>LangGraph ready</b></span>
+      <span>Action <b>Simulation only</b></span>
+    </div>
+  </header>
+
+  <main class="shell">
+    <div class="toolbar">
+      <label for="scenario">Incident story</label>
+      <select id="scenario">
+        <option value="payment">Payment service unreachable</option>
+        <option value="email">Email service memory leak</option>
+        <option value="kafka">Kafka consumer queue lag</option>
+      </select>
+    </div>
+
+    <nav class="tabs" aria-label="Product flow">
+      <button class="tab active" data-tab="telemetry">1. Telemetry</button>
+      <button class="tab" data-tab="analysis">2. Analysis</button>
+      <button class="tab" data-tab="agents">3. Agent flow</button>
+      <button class="tab" data-tab="approval">4. Human gate</button>
+    </nav>
+
+    <section id="telemetry" class="panel active" aria-labelledby="telemetry-title">
+      <div class="section-heading"><p>STEP 1</p><h2 id="telemetry-title">Observe the raw signals</h2></div>
+      <div class="grid three">
+        <article class="signal metric"><p>METRICS · PROMETHEUS</p><h3 id="metric-title"></h3><div id="chart" class="chart"></div><strong id="metric-value"></strong><small id="metric-summary"></small></article>
+        <article class="signal logs"><p>LOGS · OPENSEARCH</p><h3>Correlated runtime events</h3><pre id="log-lines"></pre></article>
+        <article class="signal trace"><p>TRACES · JAEGER</p><h3>Critical dependency path</h3><div id="trace-path" class="trace-path"></div><small id="trace-summary"></small></article>
+      </div>
+    </section>
+
+    <section id="analysis" class="panel" aria-labelledby="analysis-title">
+      <div class="section-heading"><p>STEP 2</p><h2 id="analysis-title">Correlate evidence before concluding</h2></div>
+      <div class="evidence-row"><span>M-01</span><i></i><span>L-01</span><i></i><span>T-01</span><i></i><b>ONE INCIDENT</b></div>
+      <div class="grid two">
+        <article><p>LEADING HYPOTHESIS</p><h3 id="cause"></h3><strong id="confidence"></strong><p id="rationale"></p></article>
+        <article><p>CRITIC CHECK</p><h3>Counter-evidence required</h3><p id="counter"></p><div class="badge">CITATIONS VALIDATED</div></article>
+      </div>
+    </section>
+
+    <section id="agents" class="panel" aria-labelledby="agents-title">
+      <div class="section-heading"><p>STEP 3</p><h2 id="agents-title">Make every handoff visible</h2></div>
+      <ol class="flow">
+        <li><b>Alert</b><span>Scope service and time window</span></li>
+        <li><b>Metric agent</b><span>Find the first abnormal signal</span></li>
+        <li><b>Log agent</b><span>Search correlated runtime events</span></li>
+        <li><b>Trace agent</b><span>Localize the critical path</span></li>
+        <li><b>Hypothesis agent</b><span>Rank competing explanations</span></li>
+        <li><b>Critic</b><span>Reject unsupported citations</span></li>
+        <li><b>Human gate</b><span>Interrupt before any write-like action</span></li>
+      </ol>
+    </section>
+
+    <section id="approval" class="panel" aria-labelledby="approval-title">
+      <div class="section-heading"><p>STEP 4</p><h2 id="approval-title">Approve a plan, not a production write</h2></div>
+      <div class="approval-box">
+        <div><p>RECOMMENDED PLAN</p><h3 id="recommendation"></h3><p id="verification"></p></div>
+        <div class="decision"><button id="approve">Approve simulation</button><p id="decision-status">State: awaiting_approval</p></div>
+      </div>
+      <p class="disclosure">This hosted source uses curated deterministic replay data modeled on public OpenTelemetry Demo fault concepts. It does not claim fresh production telemetry or autonomous remediation.</p>
+    </section>
+  </main>
+
+  <footer class="shell">IncidentLens · Open learning project · <a href="https://opentelemetry.io/docs/demo/">Official OpenTelemetry Demo</a></footer>
+  <script src="app.js"></script>
+</body>
+</html>
+

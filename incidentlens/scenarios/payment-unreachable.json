@@ -1,0 +1,58 @@
+{
+  "id": "payment-unreachable",
+  "title": "Payment service unreachable",
+  "source": "Curated deterministic replay modeled on OpenTelemetry Demo fault concepts",
+  "alert": {
+    "id": "A-01",
+    "severity": "SEV-1",
+    "service": "checkout",
+    "name": "CheckoutErrorBudgetBurn",
+    "window": "18:37-18:47 UTC",
+    "symptom": "Checkout error rate rose from 0.6% to 28.2%"
+  },
+  "metrics": {
+    "id": "M-01",
+    "source": "Prometheus replay",
+    "query": "sum(rate(traces_span_metrics_calls_total{service_name=\"checkout\",status_code=\"STATUS_CODE_ERROR\"}[2m])) / sum(rate(traces_span_metrics_calls_total{service_name=\"checkout\"}[2m]))",
+    "summary": "Checkout errors rose from a 0.6 percent baseline to 28.2 percent after 18:42 UTC.",
+    "unit": "percent",
+    "values": [
+      {"timestamp": "18:37:00Z", "value": 0.6},
+      {"timestamp": "18:40:00Z", "value": 0.7},
+      {"timestamp": "18:42:00Z", "value": 12.4},
+      {"timestamp": "18:44:00Z", "value": 28.2},
+      {"timestamp": "18:47:00Z", "value": 27.8}
+    ]
+  },
+  "logs": {
+    "id": "L-01",
+    "source": "OpenSearch replay",
+    "query": "service.name=checkout AND @timestamp:[18:37 TO 18:47]",
+    "summary": "Checkout reported payment connection refused while the payment health check remained successful.",
+    "events": [
+      {"timestamp": "18:42:03.114Z", "severity": "ERROR", "service": "checkout", "trace_id": "4f31a9c087b04bb0", "body": "failed to charge order: rpc error: code = Unavailable desc = connection refused"},
+      {"timestamp": "18:42:03.116Z", "severity": "WARN", "service": "checkout", "trace_id": "4f31a9c087b04bb0", "body": "payment request failed; order not committed"},
+      {"timestamp": "18:42:07.842Z", "severity": "INFO", "service": "payment", "trace_id": "health-0921", "body": "health check OK; service accepting requests on configured endpoint"}
+    ]
+  },
+  "trace": {
+    "id": "T-01",
+    "source": "Jaeger replay",
+    "query": "service=checkout&lookback=10m&limit=20",
+    "retry_query": "service=checkout&operation=Checkout&minDuration=500ms&lookback=5m&limit=5",
+    "summary": "The critical path fails between checkout and payment before payment request handling begins.",
+    "trace_id": "4f31a9c087b04bb0",
+    "spans": [
+      {"service": "frontend", "operation": "POST /api/checkout", "duration_ms": 1842, "status": "ERROR"},
+      {"service": "checkout", "operation": "Checkout", "duration_ms": 1796, "status": "ERROR"},
+      {"service": "payment", "operation": "Charge", "duration_ms": 1711, "status": "UNAVAILABLE"}
+    ]
+  },
+  "recommendation": {
+    "action": "Restore the checkout payment-service endpoint to the approved service address.",
+    "risk": "medium",
+    "verification": "Re-run checkout traffic and verify error ratio, correlated logs, and traces return to baseline.",
+    "production_write": false
+  }
+}
+
