@@ -144,6 +144,15 @@ The suite verifies:
 - Read-only live client request shapes
 - Explicit replay/simulation website labeling
 
+The latest repository verification passed 29 Python tests, 6 website tests, and all 3 deterministic replay evaluations. See [`docs/verification-report.md`](docs/verification-report.md) for the end-to-end evidence.
+
+## Demo and submission assets
+
+- [`docs/demo-runbook.md`](docs/demo-runbook.md) - reliable operator flow and fallbacks
+- [`docs/video-script.md`](docs/video-script.md) - timed, word-for-word five-minute narration
+- [`docs/submission-checklist.md`](docs/submission-checklist.md) - final links, description, evidence, and claim boundaries
+- [`IncidentLens_Final_Step_by_Step_Guide.pdf`](IncidentLens_Final_Step_by_Step_Guide.pdf) - project documentation PDF
+
 ## Read-only local telemetry capture
 
 With the OpenTelemetry Astronomy Shop running locally:
@@ -228,4 +237,3 @@ git push -u origin main
 ```
 
 After publishing, validate from a clean clone and confirm the GitHub Actions check is green.
-

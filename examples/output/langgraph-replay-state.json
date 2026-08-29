@@ -8,10 +8,10 @@
     "window": "18:37-18:47 UTC"
   },
   "approval": true,
-  "created_at": "2026-08-29T19:26:27+00:00",
+  "created_at": "2026-08-29T22:34:23+00:00",
   "evidence": [
     {
-      "collected_at": "2026-08-29T19:26:28+00:00",
+      "collected_at": "2026-08-29T22:34:23+00:00",
       "id": "M-01",
       "query": "sum(rate(traces_span_metrics_calls_total{service_name=\"checkout\",status_code=\"STATUS_CODE_ERROR\"}[2m])) / sum(rate(traces_span_metrics_calls_total{service_name=\"checkout\"}[2m]))",
       "raw": {
@@ -44,7 +44,7 @@
       "summary": "Checkout errors rose from a 0.6 percent baseline to 28.2 percent after 18:42 UTC."
     },
     {
-      "collected_at": "2026-08-29T19:26:28+00:00",
+      "collected_at": "2026-08-29T22:34:23+00:00",
       "id": "L-01",
       "query": "service.name=checkout AND @timestamp:[18:37 TO 18:47]",
       "raw": {
@@ -77,7 +77,7 @@
       "summary": "Checkout reported payment connection refused while the payment health check remained successful."
     },
     {
-      "collected_at": "2026-08-29T19:26:28+00:00",
+      "collected_at": "2026-08-29T22:34:23+00:00",
       "id": "T-01",
       "query": "service=checkout&operation=Checkout&minDuration=500ms&lookback=5m&limit=5",
       "raw": {
@@ -141,7 +141,7 @@
       "verdict": "weakened"
     }
   ],
-  "incident_id": "IL-3B1A885C",
+  "incident_id": "IL-C74F521C",
   "modes": {
     "action_mode": "simulation",
     "orchestration_engine": "langgraph",
@@ -159,55 +159,55 @@
   "status": "approved_pending_verification",
   "timeline": [
     {
-      "at": "2026-08-29T19:26:27+00:00",
+      "at": "2026-08-29T22:34:23+00:00",
       "message": "Alert boundary and incident window recorded",
       "node": "scope",
       "outcome": "success"
     },
     {
-      "at": "2026-08-29T19:26:28+00:00",
+      "at": "2026-08-29T22:34:23+00:00",
       "message": "Collected M-01 using sum(rate(traces_span_metrics_calls_total{service_name=\"checkout\",status_code=\"STATUS_CODE_ERROR\"}[2m])) / sum(rate(traces_span_metrics_calls_total{service_name=\"checkout\"}[2m]))",
       "node": "metrics",
       "outcome": "success"
     },
     {
-      "at": "2026-08-29T19:26:28+00:00",
+      "at": "2026-08-29T22:34:23+00:00",
       "message": "Collected L-01 using service.name=checkout AND @timestamp:[18:37 TO 18:47]",
       "node": "logs",
       "outcome": "success"
     },
     {
-      "at": "2026-08-29T19:26:28+00:00",
+      "at": "2026-08-29T22:34:23+00:00",
       "message": "Jaeger request timed out after the bounded query window; narrow query",
       "node": "trace",
       "outcome": "retry"
     },
     {
-      "at": "2026-08-29T19:26:28+00:00",
+      "at": "2026-08-29T22:34:23+00:00",
       "message": "Collected T-01 using service=checkout&operation=Checkout&minDuration=500ms&lookback=5m&limit=5",
       "node": "trace",
       "outcome": "success"
     },
     {
-      "at": "2026-08-29T19:26:28+00:00",
+      "at": "2026-08-29T22:34:23+00:00",
       "message": "Generated three evidence-cited alternatives",
       "node": "hypothesis",
       "outcome": "success"
     },
     {
-      "at": "2026-08-29T19:26:28+00:00",
+      "at": "2026-08-29T22:34:23+00:00",
       "message": "Hypotheses ranked and evidence citations validated",
       "node": "critic",
       "outcome": "success"
     },
     {
-      "at": "2026-08-29T19:26:28+00:00",
+      "at": "2026-08-29T22:34:23+00:00",
       "message": "Write-like remediation remains blocked pending human decision",
       "node": "human_gate",
       "outcome": "interrupt"
     },
     {
-      "at": "2026-08-29T19:26:28+00:00",
+      "at": "2026-08-29T22:34:23+00:00",
       "message": "Plan approved; no production action executed",
       "node": "human_gate",
       "outcome": "approved"
@@ -217,11 +217,11 @@
     {
       "attempt": 1,
       "error": "Jaeger request timed out after the bounded query window",
-      "recorded_at": "2026-08-29T19:26:28+00:00",
+      "recorded_at": "2026-08-29T22:34:23+00:00",
       "recovered": true,
       "strategy": "narrow query",
       "tool": "trace"
     }
   ],
-  "updated_at": "2026-08-29T19:26:28+00:00"
+  "updated_at": "2026-08-29T22:34:23+00:00"
 }

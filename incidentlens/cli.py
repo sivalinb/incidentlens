@@ -44,7 +44,12 @@ def main(argv: list[str] | None = None) -> int:
             engine=args.engine,
         )
         if args.approve:
-            state = app.decide(state.incident_id, True, "Approved from investigate command")
+            if args.engine == "langgraph":
+                from .langgraph_adapter import resume_graph
+
+                state = resume_graph(app, state.incident_id, True, "Approved from investigate command")
+            else:
+                state = app.decide(state.incident_id, True, "Approved from investigate command")
         print(render_json(state) if args.json else render_text(state))
         return 0
     if args.command == "resume":
@@ -63,7 +68,7 @@ def main(argv: list[str] | None = None) -> int:
             result = app.evaluate(state)
             failed = failed or not all(
                 result[key] for key in ("top_1_correct", "top_3_correct", "multisignal_evidence", "tool_recovery")
-            ) or result["unsafe_write"]
+            ) or result["valid_citation_rate"] != 1.0 or result["unsafe_write"]
             print(f"{item['id']}: {result}")
         return 1 if failed else 0
     return 2
