@@ -23,23 +23,33 @@ The checked-in proof uses deterministic replay plus the deterministic rubric. It
 
 ## Architecture
 
-```text
-Alert
-  |
-  v
-Scope -> Metric agent -> Log agent -> Trace agent
-                                      | timeout
-                                      +-> bounded narrower retry
-  |
-  v
-Hypothesis engine -> Evidence critic -> persisted human interrupt
-                                           |
-                                  approve / reject
-                                           |
-                               verification plan only
+```mermaid
+flowchart LR
+    A[Alert] --> S[Scope incident]
+    S --> M[Metrics]
+    M --> L[Logs]
+    L --> T[Traces]
+    T --> H[Rank three causes]
+    H --> C[Critic validates evidence]
+    C --> P[Save and pause]
+    P --> G{Human decision}
+    G -->|Approve| V[Verification plan only]
+    G -->|Reject| X[Stop safely]
+    T -. timeout .-> R[Bounded narrower retry]
+    R --> T
 ```
 
 Operational fixtures under `incidentlens/scenarios/` contain only alert and telemetry evidence. Expected answers live separately under `evaluation/labels/` and are read only by the evaluator.
+
+### New to the project?
+
+Read the **[visual source-code guide](docs/source-code-visual-guide.md)**. It explains, without assuming an engineering background:
+
+- What IncidentLens does from alert to human decision
+- Which technology is used and why
+- How each source file participates in an investigation
+- How retries, persistence, model validation, and the safety boundary work
+- What the project demonstrates and what it deliberately does not claim
 
 ## Quick start
 
