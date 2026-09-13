@@ -44,7 +44,7 @@ def footer(canvas, doc):
     canvas.line(doc.leftMargin, 30, width - doc.rightMargin, 30)
     canvas.setFont("Helvetica", 8)
     canvas.setFillColor(MUTED)
-    canvas.drawString(doc.leftMargin, 18, "IncidentLens - Week 3 completion and submission guide")
+    canvas.drawString(doc.leftMargin, 18, "IncidentLens - Completion and submission guide")
     canvas.drawRightString(width - doc.rightMargin, 18, f"Page {doc.page}")
     canvas.restoreState()
 
@@ -161,7 +161,7 @@ def build() -> None:
     )
     story = []
 
-    story += [Spacer(1, 0.55 * inch), p("MASTERING AGENTIC AI - WEEK 3", "CoverEyebrow"), p("IncidentLens", "CoverTitle")]
+    story += [Spacer(1, 0.55 * inch), p("MASTERING AGENTIC AI", "CoverEyebrow"), p("IncidentLens", "CoverTitle")]
     story += [p("Final completion report and step-by-step submission guide", "CoverSub")]
     story += [HRFlowable(width="100%", thickness=4, color=TEAL, spaceAfter=20)]
     story += [p("An evidence-first incident investigation agent that correlates metrics, logs, and traces, challenges its leading diagnosis, persists state, recovers from tool failure, and stops at a human approval boundary.", "CoverSub")]
@@ -192,7 +192,7 @@ def build() -> None:
     ]
     story += [table(status_rows, [105, 315, 95]), Spacer(1, 10), p("Do not describe the 3/3 result as generalized AI root-cause accuracy. It is a deterministic workflow regression covering evidence, state, failure recovery, and safety.", "Warning")]
 
-    story += heading("2. Week 3 requirement mapping")
+    story += heading("2. Project requirement mapping")
     req_rows = [
         ["Assignment requirement", "IncidentLens evidence"],
         ["Multi-step task", "Scope, three telemetry agents, hypothesis generation, critic, approval, verification plan."],
@@ -294,7 +294,7 @@ def build() -> None:
     story += [step(1, "Review repository status", "Confirm no credentials, databases, virtual environments, build output, or caches are staged."), code("git status\ngit add .\ngit status")]
     story += [step(2, "Commit and push", "Use the personal repository and main branch."), code("git commit -m 'feat: publish IncidentLens evidence-first agent'\ngit push -u origin main")]
     story += [PageBreak(), step(3, "Verify from a clean clone", "Install the optional graph runtime and rerun Python, Node, and replay evaluation gates."), code("git clone https://github.com/sivalinb/incidentlens.git clean-check\ncd clean-check\npython3 -m venv .venv && source .venv/bin/activate\npip install -e '.[langgraph]'\npython -m unittest discover -s tests -p 'test*.py' -v\nnode --test website/tests/*.test.mjs\nincidentlens evaluate")]
-    story += [step(4, "Create the project document", "Upload this PDF or copy its content into a shared Google Doc. Add the final GitHub, public demo, and video URLs."), step(5, "Record and upload the video", "Use the five-minute plan on the prior page. Keep credentials and local secrets off screen."), step(6, "Submit the form", "Provide the documentation, video, and code-base links at https://forms.gle/HMgTU7zy6UJ8XkJX6."), p("Builder of the Week deadline: August 30, 2026. Final certification deadline: September 16, 2026.", "Warning")]
+    story += [step(4, "Create the project document", "Upload this PDF or copy its content into a shared Google Doc. Add the final GitHub, public demo, and video URLs."), step(5, "Record and upload the video", "Use the five-minute plan on the prior page. Keep credentials and local secrets off screen."), step(6, "Submit the form", "Provide the documentation, video, and code-base links at https://forms.gle/HMgTU7zy6UJ8XkJX6."), p("Project award deadline: August 30, 2026. Final certification deadline: September 16, 2026.", "Warning")]
 
     story += [PageBreak()]
     story += heading("13. Final readiness verdict")

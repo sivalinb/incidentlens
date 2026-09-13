@@ -210,7 +210,7 @@ website/                   static visual workbench and Node tests
 docs/                      assignment mapping, video plan, and learning notes
 ```
 
-## Week 3 assignment mapping
+## Project requirement mapping
 
 | Requirement | Evidence |
 |---|---|
